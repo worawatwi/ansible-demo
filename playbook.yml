@@ -1,0 +1,40 @@
+---
+- hosts: zabbix-server
+  become: yes
+  roles:
+    - role: geerlingguy.apache
+    - role: geerlingguy.php
+      php_memory_limit: "128M"
+      php_max_execution_time: "300"
+      php_upload_max_filesize: "256M"
+      php_enable_php_fpm: true
+    - role: geerlingguy.apache-php-fpm
+    - role: geerlingguy.postgresql
+      postgresql_python_library: python3-psycopg2
+    - role: community.zabbix.zabbix_server
+    - role: community.zabbix.zabbix_agent
+      zabbix_agent_server: 127.0.0.1
+      zabbix_agent_include_dir: ["/etc/zabbix/zabbix_agentd.d"]
+    - role: community.zabbix.zabbix_web
+      zabbix_api_server_url: localhost
+      zabbix_timezone: Asia/Bangkok
+  vars:
+    ansible_shell_allow_world_readable_temp: true
+    zabbix_server_database: pgsql
+    zabbix_server_database_long: postgresql
+    zabbix_server_dbport: 5432
+    zabbix_server_dbuser: "{{ server_dbuser }}"
+    zabbix_server_dbpassword: "{{ server_dbpassword }}"
+    zabbix_server_dbname: "{{ server_dbname }}"
+- hosts: zabbix-proxy
+  become: yes
+  roles:
+    - role: geerlingguy.postgresql
+      postgresql_python_library: python3-psycopg2
+    - role: community.zabbix.zabbix_proxy
+      zabbix_proxy_server: "{{ zabbix_server }}"
+      zabbix_proxy_database: pgsql
+      zabbix_proxy_dbport: 5432
+      zabbix_proxy_dbuser: "{{ proxy_dbuser }}"
+      zabbix_proxy_dbpassword: "{{ proxy_dbpassword }}"
+      zabbix_proxy_dbname: "{{ proxy_dbname }}"
