@@ -12,9 +12,6 @@
     - role: geerlingguy.postgresql
       postgresql_python_library: python3-psycopg2
     - role: community.zabbix.zabbix_server
-    - role: community.zabbix.zabbix_agent
-      zabbix_agent_server: 127.0.0.1
-      zabbix_agent_include_dir: ["/etc/zabbix/zabbix_agentd.d"]
     - role: community.zabbix.zabbix_web
       zabbix_api_server_url: localhost
       zabbix_timezone: Asia/Bangkok
